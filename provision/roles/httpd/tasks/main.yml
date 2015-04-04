@@ -1,0 +1,18 @@
+---
+- name: ensure httpd is installed
+  yum: name=httpd state=installed
+ 
+- name: httpd config
+  template: src=httpd.conf.j2 dest=/etc/httpd/conf/httpd.conf backup=yes
+
+- name: ensure permissions
+  file: path={{ item }} state=directory recurse=yes owner={{ user }} group={{ group }}
+  with_items:
+    - /var/log/httpd
+    - /var/run/httpd
+
+- name: ensure document root directory exists
+  file: path={{ httpd_document_root }} state=directory owner={{ user }} group={{ group }}
+
+- name: ensure httpd is running and enabled
+  service: name=httpd state=started enabled=yes

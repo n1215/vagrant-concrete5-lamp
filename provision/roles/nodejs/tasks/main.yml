@@ -1,0 +1,19 @@
+---
+- name: ensure epel repo exists
+  yum: name={{ item }} state=present
+  with_items:
+    - http://ftp.riken.jp/Linux/fedora/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
+- name: ensure necessary packages exist
+  yum: pkg={{ item }} state=present
+  with_items:
+    - wget
+    - curl
+    - gcc-c++
+    - gcc
+
+- name: ensure node.js and npm are installed
+  yum: pkg={{ item }} state=present enablerepo=epel
+  with_items:
+    - nodejs
+    - npm

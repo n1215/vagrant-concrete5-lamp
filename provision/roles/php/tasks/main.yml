@@ -1,0 +1,35 @@
+---
+- name: ensure remi repo exists
+  yum: name={{ item }} state=present
+  with_items:
+    - http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+
+- name: ensure php packages are installed
+  yum: name={{ item }} state=present enablerepo=remi,remi-php56
+  with_items:
+    - php
+    - php-devel
+    - php-mysqlnd
+    - php-mbstring
+    - php-mcrypt
+    - php-gd
+    - php-opcache
+
+- name: configure php.ini
+  template: src=php.ini.j2 dest=/etc/php.ini backup=yes
+
+- name: check if composer has installed
+  stat: path=/usr/bin/composer
+  register: composer_bin
+  ignore_errors: True
+
+- name: install composer
+  shell: curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin create=/usr/bin/composer.phar
+  when: composer_bin.stat.exists == False
+
+- name: move composer.phar to executable directory
+  shell: mv /usr/bin/composer.phar /usr/bin/composer creates=/usr/bin/composer
+  when: composer_bin.stat.exists == False
+
+- name: make composer executable
+  file: path=/usr/bin/composer mode=a+x state=file

@@ -1,0 +1,13 @@
+---
+- name: Install Concrete5 5.7
+  hosts: app-server
+  connection: local
+  remote_user: vagrant
+  sudo: yes
+  roles:
+    - yum
+    - httpd
+    - mysql
+    - nodejs
+    - php
+    - concrete5

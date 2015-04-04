@@ -1,0 +1,14 @@
+.vagrant
+.idea
+/nbproject
+.DS_Store
+.DS_Store?
+._*
+.Trases
+Icon*
+ehthumbs.db
+Thumbs.db
+.env
+/Vagrantfile
+/concrete5
+

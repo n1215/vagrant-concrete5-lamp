@@ -1,0 +1,45 @@
+---
+- name: ensure database exists
+  mysql_db: name={{ db_name }} state=present encoding=utf8 login_user=root login_password={{ db_root_password }}
+
+- name: ensure database user exists
+  mysql_user: name={{ db_login }} password={{ db_password }} priv={{ db_name }}.*:ALL state=present login_user=root login_password={{ db_root_password }}
+
+- name: ensure app root directory is absent
+  file: path={{ app_root }} state=absent
+
+- name: clone cocnrete5 repository
+  git: repo={{ app_repository }}
+       dest={{ app_root }}
+       version={{ app_version }}
+       force=yes
+  sudo: no
+
+- name: composer install
+  shell: composer install
+  args:
+    chdir: "{{ app_root }}/web/concrete"
+  sudo: no
+
+- name: install grunt-cli
+  shell: npm install -g grunt-cli
+  args:
+    chdir: "{{ app_root }}/build"
+
+- name: npm cache clean
+  shell: npm cache clean
+  args:
+    chdir: "{{ app_root }}/build"
+
+- name: npm install
+  shell: npm install --no-bin-links
+  args:
+    chdir: "{{ app_root }}/build"
+
+- name: grunt release
+  shell: grunt release
+  args:
+    chdir: "{{ app_root }}/build"
+
+- name: restart httpd
+  service: name=httpd state=restarted

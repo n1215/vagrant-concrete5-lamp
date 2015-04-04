@@ -1,0 +1,31 @@
+---
+- name: ensure mysql community repos are installed
+  yum: name=http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm state=present
+
+- name: ensure mysql and python-mysqldb are installed
+  yum: name={{ item }} enablerepo=mysql56-community state=present
+  with_items:
+    - mysql-server
+    - mysql-devel
+    - MySQL-python
+
+- name: ensure mysqld service is running and enabled
+  service: name=mysqld state=started enabled=yes
+
+- name: set root password
+  mysql_user: name=root host={{ item }} password={{ db_root_password }} state=present check_implicit_admin=yes login_user=root login_password={{ db_root_password }}
+  with_items:
+    - localhost
+    - 127.0.0.1
+
+- name: remove anonymous users
+  mysql_user: name="" host={{ item }} state=absent login_user=root login_password={{ db_root_password }}
+  with_items:
+    - localhost
+    - 127.0.0.1
+
+- name: disallow remote root login
+  mysql_user: name=root host={{ hostname }} state=absent login_user=root login_password={{ db_root_password }}
+
+- name: remove test database
+  mysql_db: name=test state=absent login_user=root login_password={{ db_root_password }}

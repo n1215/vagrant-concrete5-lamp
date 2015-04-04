@@ -1,0 +1,27 @@
+---
+user: vagrant
+group: vagrant
+user_home: "/home/{{ user }}"
+synced_folder: "/vagrant"
+hostname: localhost.localdomain
+
+# Concrete5
+app_repository: https://github.com/concrete5/concrete5-5.7.0
+app_version: 5.7.3.1
+app_root: "{{ synced_folder }}/src"
+
+# Web server
+server_name: 192.168.33.10
+httpd_document_root: "{{ app_root }}/web"
+
+# Database
+db_root_password: root
+db_name: concrete5
+db_login: concrete5_user
+db_password: concrete5
+db_host: localhost
+db_port: 3306
+
+# PHP
+php_short_open_tag: On
+php_timezone: "Asia/Tokyo"

@@ -1,0 +1,22 @@
+---
+- name: ensure necessary repo exists
+  yum: name={{ item }} state=present
+  with_items:
+    - http://rpms.famillecollet.com/enterprise/remi-release-6.rpm
+    - http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+
+- name: ensure essential packages are installed
+  yum: name={{ item }} state=present
+  with_items:
+    - vim
+    - git
+    - wget
+
+- name: check if selinux is enabled
+  command: getenforce
+  register: selinux_enable
+  ignore_errors: True
+
+- name: install libselinux-python
+  yum: name=libselinux-python 
+  when: selinux_enable|success and selinux_enable.stdout != 'Disabled'
